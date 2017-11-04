@@ -76,6 +76,7 @@ qcow2 的格式可以看[IBM 的介紹](https://www.ibm.com/developerworks/cn/li
     - guest vm eth0 <-> host os br1
     - guest vm eth1 <-> host os br2
 - 我不喜歡寫太複雜的 kickstart file ，雖然他功能很強大，不過我把 kickstart 這邊的角色設定在能夠把基本的 os 、 network 、 rootpw 帶起來就好，其他的 config management ，我傾向交給 ansible、puppet 一類的管理工具來處理，生起來的 os 乾乾淨淨就好
+- 如果要檢查 kickstart 的 .cfg 是不是合法，可以安裝 `$ sudo yum install -y pykickstart` ，然後 `$ /usr/bin/ksvalidator <ks.cfg>`
 
 <script src="https://gist.github.com/wyde/5da0c89a81a844339119e715c9ec38b9.js"></script>
 
@@ -90,29 +91,28 @@ virt-install 有些參數功能跟 kickstart file 是 overlap 的，例如兩者
 要特別注意
 - `--initrd-inject` 和 `--extrs-args` 裡 ks file 的寫法，前者要寫完整的路徑(和檔名)，後者只要寫檔名
 - 用`--extra-args` 之後，如果 iso 位置前面的參數是 `--cdrom` 的話會報錯，必須用 `--location`
+- $VAR 請自行代入參數，不需要加雙引號，可以參考文末 Github repo 上的 scripts
 
 ```
-    NAME=vm-testing
-    KSNAME=$NAME.cfg
-    DISKSIZE=50G 
-    
     virt-install \
         --name $NAME \
         --vcpus 1 \
         --ram 1024 \
-        --disk path=/image/qcow2/$NAME.qcow2 \
-        --disk size=DISKSIZE \
+        --disk path=$DISKPATH,size=$DISKSIZE \
         --os-variant rhel7 \
-        --network=bridge:br1 \
-        --network=bridge:br2 \
+        --network=bridge:$BR1 \
+        --network=bridge:$BR2 \
         --nographics \
-        --initrd-inject /home/ops/hostmanager/kickstart/$KSNAME \
+        --initrd-inject $KSPATH \
         --extra-args "ks=file:/$KSNAME console=tty0 console=ttyS0,115200n8" \
-        --location=/image/iso/CentOS-7-x86_64-Everything-1708.iso
+        --location=$ISOPATH \
+        --autostart \
+        --noautoconsole # without connect to console automatically
 ```
 
 ## Reference
 
 - 這邊推薦必備的參考資料就是 redhat 官方的[Red Hat Enterprise Linux 7 - Virtualization Deployment and Administration Guide ](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/pdf/Virtualization_Deployment_and_Administration_Guide/Red_Hat_Enterprise_Linux-7-Virtualization_Deployment_and_Administration_Guide-en-US.pdf) 這比網路上獅子的鬃毛要可靠多了，5xx 頁拿來當參考書
 - 嫌樓上太長的也可以看 4x 頁，一樣是官方連結的 concept [Red Hat Enterprise Linux 7 - Virtualization Getting Started Guide](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/pdf/Virtualization_Getting_Started_Guide/Red_Hat_Enterprise_Linux-7-Virtualization_Getting_Started_Guide-en-US.pdf)
-- 整個流程還有很多可以自動化的部分，正在開發 scripts ，有興趣可看 [github:vmhost-manager](https://github.com/wyde/vmhost-manager)
+- [virt-install 參數的參考](https://www.ibm.com/support/knowledgecenter/en/linuxonibm/liaat/liaatvirtinstalloptions.htm)
+- 整個流程還有很多可以自動化的部分，正在開發 scripts ，有興趣可看 [github:vmhost-manager](https://github.com/wyde/virt-installer)

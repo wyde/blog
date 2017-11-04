@@ -45,7 +45,7 @@ Goal: 依照架構圖，透過 iSCSI 各掛上一顆 Virtual Disk，這個架構
     $ sudo yum update
     $ sudo yum install epel-release iscsi-initiator-utils
     $ sudo iscsiadm -m discovery -t st -p 192.168.130.20
-    $ sudo iscsiadm -m discovery -t st -p 192.168.130.15
+    $ sudo iscsiadm -m discovery -t st -p 192.168.131.15
 ```
 
 檢查一下，把不屬於 server1 的 portal 砍掉

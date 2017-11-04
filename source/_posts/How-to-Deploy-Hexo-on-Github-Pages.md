@@ -123,6 +123,23 @@ tags:
 
 ---
 
+## 打草稿
+
+2017-11-03 新增
+
+參考了[這篇文章](http://oomusou.io/hexo/hexo-draft/)，學寫草稿
+
+```
+    $ hexo n draft "New Draft" # 新增草稿
+    $ hexo s --draft -p $PORT # 測試 server
+    $ hexo publish New-Draft # 將草稿由 ./source/_drafts 移到 ./source/_posts 裡
+```
+
+坑：publish 後面接的是檔案不含 .md 也不含路徑！！
+
+
+---
+
 ## Third Party Integration
 
 簡單的配置就懶得寫教學了，直接參考別人的
