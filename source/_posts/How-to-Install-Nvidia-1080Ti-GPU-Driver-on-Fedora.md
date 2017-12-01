@@ -9,8 +9,8 @@ tags:
 ===
 <br>
 
-- Nvidia 1080TI GPU * 2 (記得要 1000 w 的電源)
-- Fedora 26
+- Nvidia 1080Ti GPU * 2 (記得要 1000 w 的電源)
+- tested environment: Fedora 25 and 26
 
 過程蠻簡單的，就是把 fedora 預設的 nouveau 關掉之後灌 n 家自己的驅動，各個教學都差不多，可以參考
 
@@ -35,7 +35,7 @@ a. 裝套件
 
 不過我這些也裝了
 ```
-    $ sudo dnf install -y dkms acpid libglvnd-glx libglvnd-opengl libglvnd-devel pkgconfig
+    $ sudo dnf install -y dkms acpid cmake pkgconfig
 ```
 
 ---
@@ -58,7 +58,7 @@ verify GPU 的資訊
 ```
 
 依照 GPU 和系統資訊上[官方網站查詢顯卡驅動](http://www.nvidia.com/Download/Find.aspx?lang=en-us)
-![](https://i.imgur.com/cg6KvgL.png)
+![](https://i.imgur.com/jWywAGE.png)
 
 找到該驅動下載的[說明頁面](http://www.nvidia.com/download/driverResults.aspx/125399/en-us)並下載，我裝的是 387.12 版本
 ```
@@ -83,7 +83,7 @@ c. 修改 grub 開機選項
 > 如果是UEFI開機，執行 $ sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 > (不確定的話就看哪個檔案存在，通常不會兩個都存在)
 
-新一點的機器應該都支援 UEFI 了
+我的 f25 是 BIOS 開機， f26 是 UEFI 開機
 
 ---
 

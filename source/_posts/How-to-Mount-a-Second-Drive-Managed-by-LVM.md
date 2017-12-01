@@ -104,33 +104,33 @@ LVM 與 非 LVM 系統概念上的對應
 
 ### VG
 
-這裡我把 VG 的 name 叫做 `vg_image`
+這裡我把 VG 的 name 叫做 `vg-image`
 ```
-    $ sudo vgcreate vg_image /dev/sdb1
-      Volume group "vg_image" successfully created
+    $ sudo vgcreate vg-image /dev/sdb1
+      Volume group "vg-image" successfully created
     
     $ sudo vgs
       VG       #PV #LV #SN Attr   VSize   VFree 
       cl         1   3   0 wz--n- 417.62g  4.00m
-      vg_image   1   0   0 wz--n-  <3.64t <3.64t
+      vg-image   1   0   0 wz--n-  <3.64t <3.64t
 ```
 
 ### LV
 
--n: name 這裡命名為 `lv_image`
+-n: name 這裡命名為 `lv-image`
 -l: 該 LV 所佔 VG 比例
 -L: fixed size
 
 ```
-    $ sudo lvcreate -n lv_image -l 100%FREE vg_image
-      Logical volume "lv_image" created.
+    $ sudo lvcreate -n lv-image -l 100%FREE vg-image
+      Logical volume "lv-image" created.
     
     $ sudo lvs
       LV       VG        Attr     LSize
       home     cl       -wi-ao---- <336.12g
       root     cl       -wi-ao----   50.00g
       swap     cl       -wi-ao----   31.50g
-      lv_image vg_image -wi-a-----   <3.64t
+      lv-image vg-image -wi-a-----   <3.64t
 ```
 
 到這就做完 LVM 的設定，可以 `$ sudo lvdisplay <vg name>/<lv name>` 檢視 detail
@@ -141,7 +141,7 @@ LVM 與 非 LVM 系統概念上的對應
 
 這時候 LV 的路徑在 `/dev/<vg name>/<lv name>`，所以就直接
 ```
-    $ sudo mkfs.xfs /dev/vg_image/lv_image
+    $ sudo mkfs.xfs /dev/vg-image/lv-image
 ```
 過個幾秒應該就格式化好了
 
@@ -149,14 +149,14 @@ LVM 與 非 LVM 系統概念上的對應
 
 ## 掛載(mount)
 
-我們要把 `lv_image` 掛到 `/image` 目錄，然後寫進 `/etc/fstab` 讓系統開機自動 mount，這邊的 UUID 要看個別的系統而定
+我們要把 `lv-image` 掛到 `/image` 目錄，然後寫進 `/etc/fstab` 讓系統開機自動 mount，這邊的 UUID 要看個別的系統而定
 
 ```
     $ sudo mkdir /image
-    $ sudo blkid /dev/vg_image/lv_image
-    /dev/vg_image/lv_image: UUID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" TYPE="xfs"
+    $ sudo blkid /dev/vg-image/lv-image
+    /dev/vg-image/lv-image: UUID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" TYPE="xfs"
 
-    $ echo 'UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx /image xfs    defaults        0 0' | sudo tee --append /etc/fstab > /dev/null
+    $ echo `sudo blkid /dev/vg-image/lv-image | awk '{print $2}'` ' /image xfs    defaults        0 0' | sudo tee --append /etc/fstab > /dev/null
     $ sudo mount -a
 ```
 
@@ -165,7 +165,7 @@ LVM 與 非 LVM 系統概念上的對應
 `df` 一下
 ```
     $ df -h | grep /image
-    /dev/mapper/vg_image-lv_image  3.7T   33M  3.7T    1% /image
+    /dev/mapper/vg-image-lv-image  3.7T   33M  3.7T    1% /image
 ```
 
 到這邊，就成功把資料碟以 LVM 管理的方式掛載起來了

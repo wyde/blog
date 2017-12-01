@@ -64,7 +64,7 @@ tags: [c9, setup, 開發環境, 起手式]
 
 然後把 key 加入 ssh-agent 測試一波
 ```
-    $ eval "$(ssh-agent -s)"
+    $ eval `ssh-agent -s`
     $ ssh-add ~/.ssh/<private key>
     $ ssh -T git@github.com
     Hi <github username>, Youve successfully authenticated, but GitHub does not provide shell access.
